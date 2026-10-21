@@ -7,12 +7,12 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.4.0-2ea8ff?style=flat-square" alt="Version 1.4.0">
+  <img src="https://img.shields.io/badge/version-1.4.1-2ea8ff?style=flat-square" alt="Version 1.4.1">
   <img src="https://img.shields.io/badge/Rust-2021-000000?style=flat-square&amp;logo=rust" alt="Rust 2021">
   <img src="https://img.shields.io/badge/Tauri-2-24C8DB?style=flat-square&amp;logo=tauri" alt="Tauri 2">
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&amp;logo=react" alt="React 19">
   <img src="https://img.shields.io/badge/Windows-10%2F11-0078D4?style=flat-square&amp;logo=windows" alt="Windows 10/11">
-  <img src="https://img.shields.io/badge/tests-126%20verts-2ea44f?style=flat-square" alt="126 tests verts">
+  <img src="https://img.shields.io/badge/tests-129%20verts-2ea44f?style=flat-square" alt="129 tests verts">
   <img src="https://img.shields.io/badge/licence-MIT%20%7C%20Apache--2.0-lightgrey?style=flat-square" alt="Licence MIT ou Apache-2.0">
 </p>
 
@@ -45,8 +45,8 @@ est documenté dans [`FEATURE_STATUS.md`](FEATURE_STATUS.md).
 |---|---|
 | **HTTP(S)** | Téléchargement segmenté (requêtes `Range` / `206`), pause et reprise sans corruption, reprise après redémarrage, retries avec backoff et `Retry-After`, miroirs, limites de débit globales et par tâche, fichiers sans `Content-Length`, SHA-256 et renommage atomique `.part` → destination. |
 | **BitTorrent** | Magnets et fichiers `.torrent` via librqbit, sélection des fichiers, pause/reprise, suppression. **Mode anonyme** optionnel : trafic TCP pairs/trackers routé par un proxy SOCKS5 (Tor ou I2P), DHT/uTP/LSD et écoute entrante désactivés. |
-| **Capture média** | Téléchargement via yt-dlp (YouTube, TikTok, Twitch, X, Instagram…), analyse des métadonnées sans téléchargement, choix de la qualité, pause/reprise, installation de yt-dlp en un clic. |
-| **Navigateur** | Capture directe au clic avant tout téléchargement, bouton **Titan** au survol des vidéos (page envoyée à yt-dlp), flux de secours par l'API `downloads`, menus contextuels, restauration automatique dans le navigateur si Titan est indisponible. Chrome, Edge, Brave et Firefox. |
+| **Capture média** | Téléchargement via yt-dlp (YouTube, TikTok, Twitch, X, Instagram…), analyse des métadonnées sans téléchargement, choix de la qualité, pause/reprise, reprise des captures échouées, installation de yt-dlp et de ffmpeg (fusion vidéo + audio) en un clic. |
+| **Navigateur** | Capture directe au clic avant tout téléchargement, bouton **Titan** au survol des vidéos (page envoyée à yt-dlp), flux de secours par l'API `downloads`, menus contextuels, restauration automatique dans le navigateur si Titan est indisponible, messages d'erreur actionnels et nouvelles tentatives si le service worker a été déchargé. Chrome, Edge, Brave et Firefox. |
 | **Interface** | Vues Téléchargements, Torrents, Médias, Catégories, Historique et Paramètres ; panneau de détails (segments, sources, historique, vérification) ; performances en temps réel ; 6 thèmes ; détection matérielle et optimisation des connexions ; icône de zone de notification ; notifications Windows ; interface en français. |
 | **Données** | SQLite en mode WAL, sauvegarde automatique quotidienne (7 copies), restauration automatique si la base manque au démarrage, cookies et en-têtes sensibles chiffrés au repos, historique des téléchargements et benchmarks. |
 
@@ -136,9 +136,10 @@ Dernière campagne de vérification : **21 octobre 2026**.
 | Vérification | Résultat |
 |---|---|
 | `cargo check --workspace` | 0 erreur, 0 avertissement |
-| `cargo test --workspace` | **126 tests verts** (118 unitaires + 8 bout-en-bout) |
+| `cargo test --workspace` | **129 tests verts** (121 unitaires + 8 bout-en-bout) |
 | `cargo test -p titan-engine --test e2e_http` | HTTP réel, 16 Mio, pause/reprise et redémarrage sans corruption |
 | `cargo test -p titan-capture` | yt-dlp réel : analyse, téléchargement, pause/reprise |
+| `cargo test -p titan-capture --test ffmpeg_install -- --ignored` | Installation réelle de ffmpeg (~190 Mo) depuis l'interface |
 | `cargo test -p titan-torrent --test proxy_e2e` | Annonce tracker via un proxy SOCKS5 local |
 | `npx tsc` + `npx vite build` | TypeScript strict sans erreur, build frontend OK |
 
@@ -160,8 +161,8 @@ bêta est dans [`BETA_TEST_REPORT.md`](BETA_TEST_REPORT.md).
 
 Prochains chantiers :
 
-- validation terrain de la capture au clic et de la capture vidéo YouTube dans
-  un vrai Brave/Chrome, puis des palettes Minuit/Océan/Braise ;
+- validation terrain du clic réel sur le bouton Titan dans Brave/Chrome, puis des
+  palettes Minuit/Océan/Braise ;
 - détection de média (« Grabber ») et planificateur horaire ;
 - internationalisation de l'interface ;
 - mise à jour automatique et signature de code ;
